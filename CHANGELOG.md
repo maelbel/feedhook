@@ -18,3 +18,6 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Parser module: RSS 2.0 and Atom to a common `FeedItem` (id, title, link,
   date, plain-text summary, image); only http(s) links and images kept,
   HTML reduced to text, every field bounded, at most 100 items (#4).
+- Store module: SQLite database in `DATA_DIR` (built-in `node:sqlite`,
+  numbered migrations, WAL) remembering posted items, the silent first-run
+  seed and HTTP cache validators per feed (#5).
