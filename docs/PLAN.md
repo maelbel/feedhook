@@ -116,7 +116,7 @@ UPTIME_KUMA_PUSH_URL=...
 
 ## 7. Repo & workflow
 
-- **Gitflow**: `main` (releases), `develop`, `feature/*`, `release/*`, `hotfix/*`.
+- **Branches**: a single `main` branch; `feature/*`, `fix/*`, `chore/*` branches merged into it by PR; releases are tags on `main`. (Gitflow's `develop` branch was dropped as too heavy for one maintainer.)
 - **Conventional Commits** (`feat:`, `fix:`, `chore:`, `ci:`, `docs:`, `test:`).
 - Each commit is approved before it is made. Pushing happens after an approved commit; a PR is opened only after approval.
 - Structure:
@@ -137,7 +137,7 @@ docker-compose.yml
 
 | # | Issue | Type |
 |---|---|---|
-| 1 | Project setup: Nest standalone app, oxlint, Prettier, Vitest, Gitflow branches, README | chore |
+| 1 | Project setup: Nest standalone app, oxlint, Prettier, Vitest, branches, README | chore |
 | 2 | ConfigModule: `feeds.yaml` and env loading, zod validation (https-only, per-feed webhook env) | feat |
 | 3 | FetcherModule: timeout, size limit, conditional requests | feat |
 | 4 | ParserModule: RSS and Atom to `FeedItem` (with fixtures) | feat |

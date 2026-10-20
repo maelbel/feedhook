@@ -1,17 +1,22 @@
 # Contributing
 
-## Branches (Gitflow)
+## Branches
+
+A single long-lived branch, `main`, kept always green. Every change goes
+through a short-lived branch and a pull request into `main`.
 
 | Branch | Purpose |
 |---|---|
-| `main` | Released code only. Every merge is tagged (`vX.Y.Z`). |
-| `develop` | Integration branch for the next release. |
-| `feature/<issue>-<short-name>` | New work, branched from `develop`, e.g. `feature/2-config-module`. |
-| `release/<version>` | Release preparation, from `develop`, merged into `main` and `develop`. |
-| `hotfix/<version>` | Urgent fix from `main`, merged into `main` and `develop`. |
+| `main` | Always working. Releases are tags on it (`vX.Y.Z`). |
+| `feature/<issue>-<short-name>` | New work, e.g. `feature/3-fetcher-module`. |
+| `fix/<issue>-<short-name>` | Bug fix. |
+| `chore/<short-name>` | Tooling, docs, maintenance. |
 
-Open pull requests against `develop` (or `main` for releases/hotfixes) and
-link the issue (`Closes #2`).
+Branch from an up-to-date `main`, open the pull request against `main`, and
+link the issue (`Closes #3`). Delete the branch once merged.
+
+To release: update the version and CHANGELOG in a PR, merge it, then tag
+`main` (`git tag v1.0.0 && git push origin v1.0.0`).
 
 ## Commits (Conventional Commits)
 

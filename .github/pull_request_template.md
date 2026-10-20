@@ -10,7 +10,7 @@ Closes #
 
 ## Checklist
 
-- [ ] Branch follows Gitflow (`feature/*` → `develop`)
+- [ ] Branch is up to date with `main` (`feature/*`, `fix/*` or `chore/*`)
 - [ ] Commits follow Conventional Commits
 - [ ] `npm run lint && npm run typecheck && npm run format:check` pass
 - [ ] `npm test && npm run test:e2e` pass

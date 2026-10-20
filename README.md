@@ -84,7 +84,7 @@ Webhook URLs are secrets: they are never printed, even in error messages.
 
 ## Contributing
 
-Gitflow + Conventional Commits. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Pull requests into `main` + Conventional Commits. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Security
 
