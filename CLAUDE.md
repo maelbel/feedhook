@@ -54,7 +54,8 @@ npm run build
 - **Secrets**: webhook URLs come from env vars only and are `Secret` objects;
   call `.reveal()` only at the point of use (the HTTP request), never log it.
 - **Feeds are untrusted**: only `https://` URLs, timeout + max size, strip
-  HTML, truncate to Discord limits, `allowed_mentions: { parse: [] }`.
+  HTML, truncate to Discord limits, `allowed_mentions: { parse: [] }`,
+  escape markdown in descriptions (`escapeMarkdown`, no masked links).
 - Mark an item as seen **only after** Discord accepted it.
 - **Database**: `node:sqlite` with `?` placeholders only (never build SQL
   from strings). Schema changes = a **new** entry at the end of
