@@ -1,0 +1,12 @@
+feeds:
+  - id: nuxt-blog
+    name: Nuxt Blog
+    url: https://nuxt.com/blog/rss.xml
+    color: '#00DC82'
+    webhookEnv: DISCORD_WEBHOOK_NUXT
+
+  - id: nestjs-releases
+    name: NestJS Releases
+    url: https://github.com/nestjs/nest/releases.atom
+    color: '#E0234E'
+    webhookEnv: DISCORD_WEBHOOK_NESTJS

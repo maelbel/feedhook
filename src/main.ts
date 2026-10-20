@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
+import { AppConfig, ConfigError } from './config/index.js';
 
 /**
  * feedhook runs as a NestJS *standalone application*: there is no HTTP
@@ -8,12 +9,35 @@ import { AppModule } from './app.module.js';
  * Discord webhooks) from scheduled jobs, which keeps the attack surface small.
  */
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.createApplicationContext(AppModule);
+  const logger = new Logger('Bootstrap');
 
-  // Close modules cleanly on SIGTERM/SIGINT (docker stop, Ctrl+C).
-  app.enableShutdownHooks();
+  try {
+    // abortOnError: false makes startup errors reach the catch below
+    // instead of Nest exiting on its own.
+    const app = await NestFactory.createApplicationContext(AppModule, {
+      abortOnError: false,
+    });
 
-  new Logger('Bootstrap').log('feedhook started');
+    // Close modules cleanly on SIGTERM/SIGINT (docker stop, Ctrl+C).
+    app.enableShutdownHooks();
+
+    const config = app.get(AppConfig);
+    logger.log(
+      `feedhook started: ${config.feeds.length} feed(s) [${config.feeds
+        .map((feed) => feed.id)
+        .join(', ')}], schedule "${config.pollCron}"`,
+    );
+  } catch (error) {
+    if (error instanceof ConfigError) {
+      // Nest has already logged the list of issues (see ConfigError).
+      logger.error('Startup aborted: fix the configuration above and restart.');
+    } else {
+      logger.error(
+        error instanceof Error ? (error.stack ?? error.message) : String(error),
+      );
+    }
+    process.exitCode = 1;
+  }
 }
 
 await bootstrap();

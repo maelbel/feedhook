@@ -9,3 +9,6 @@ and the project uses [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Project setup: NestJS standalone application, Vitest, oxlint, Prettier.
+- Config module: `feeds.yaml` and environment validated with zod at startup,
+  all problems reported at once, webhook URLs wrapped in a `Secret` so they
+  are never logged (#2).
