@@ -86,7 +86,7 @@ UPTIME_KUMA_PUSH_URL=...
 | Framework | NestJS 12 (standalone app, ESM), TypeScript strict, Node.js 24 LTS |
 | Scheduling | `@nestjs/schedule` |
 | Config | `@nestjs/config` + `zod` + `yaml` |
-| Feed parsing | `rss-parser` |
+| Feed parsing | `@rowanmanning/feed-parser` (on `fast-xml-parser`; `rss-parser` is unmaintained since 2023) + `html-entities` |
 | Storage | TypeORM + `better-sqlite3` (file on a Docker volume) |
 | Logging | `nestjs-pino` (JSON logs, secrets redacted) |
 | Tests | Vitest (Nest 12 default) with fixture feeds and mocked HTTP |
