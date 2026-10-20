@@ -15,3 +15,6 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Fetcher module: https-only downloads (every redirect hop checked), one
   10 s timeout covering the body, 2 MB size cap while streaming, and
   ETag / Last-Modified conditional requests (`304 Not Modified`) (#3).
+- Parser module: RSS 2.0 and Atom to a common `FeedItem` (id, title, link,
+  date, plain-text summary, image); only http(s) links and images kept,
+  HTML reduced to text, every field bounded, at most 100 items (#4).

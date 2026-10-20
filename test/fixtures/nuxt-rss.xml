@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>The Nuxt Blog</title>
+        <link>https://nuxt.com/blog</link>
+        <description>News and updates about Nuxt.</description>
+        <lastBuildDate>Tue, 20 Oct 2026 17:36:48 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>en</language>
+        <image>
+            <title>The Nuxt Blog</title>
+            <url>https://nuxt.com/icon.png</url>
+            <link>https://nuxt.com/blog</link>
+        </image>
+        <copyright>Copyright © 2016-2026 Nuxt All Rights Reserved</copyright>
+        <atom:link href="https://nuxt.com/blog/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[Nuxt 4.6]]></title>
+            <link>https://nuxt.com/blog/v4-6</link>
+            <guid isPermaLink="true">https://nuxt.com/blog/v4-6</guid>
+            <pubDate>Mon, 05 Oct 2026 23:00:00 GMT</pubDate>
+            <description><![CDATA[Nuxt 4.6 makes Nuxt server-agnostic with nuxt/server, rebuilds typed $fetch, adds sessions, Vue Vapor support and new dev error pages, and ships alongside Nuxt CLI v4.]]></description>
+            <category>Release</category>
+            <enclosure url="https://nuxt.com/assets/blog/v4.6.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[Nuxt Security Patch Releases]]></title>
+            <link>https://nuxt.com/blog/v4-5-security</link>
+            <guid isPermaLink="true">https://nuxt.com/blog/v4-5-security</guid>
+            <pubDate>Mon, 27 Jul 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[Nuxt 4.5.1 and 3.21.10 are out now, fixing several security issues, alongside a critical fix in @nuxt/devtools 3.3.1. We recommend upgrading as soon as possible.]]></description>
+            <category>Release</category>
+            <enclosure url="https://nuxt.com/assets/blog/v4.5.1.png" length="0" type="image/png"/>
+        </item>
+        <item>
+            <title><![CDATA[Nuxt 4.5]]></title>
+            <link>https://nuxt.com/blog/v4-5</link>
+            <guid isPermaLink="true">https://nuxt.com/blog/v4-5</guid>
+            <pubDate>Sat, 18 Jul 2026 10:00:00 GMT</pubDate>
+            <description><![CDATA[Nuxt 4.5 is our biggest release in a while. Vite 8, Rspack 2 powered by Rsbuild, experimental SSR streaming, a stable error code system, a new useLayout composable, named views, and a lot of groundwork for Nuxt 5.]]></description>
+            <category>Release</category>
+            <enclosure url="https://nuxt.com/assets/blog/v4.5.png" length="0" type="image/png"/>
+        </item>
+    </channel>
+</rss>
