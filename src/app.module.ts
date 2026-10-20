@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from './config/index.js';
+import { FetcherModule } from './fetcher/index.js';
 
 /**
  * Root module. Feature modules are added here as they are built
  * (see docs/PLAN.md, section 8):
- * FetcherModule, ParserModule, StoreModule, DiscordModule, SchedulerModule.
+ * ParserModule, StoreModule, DiscordModule, SchedulerModule.
  */
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, FetcherModule],
 })
 export class AppModule {}
