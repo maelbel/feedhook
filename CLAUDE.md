@@ -47,7 +47,11 @@ npm run build
 - One Nest module per folder; services are injectable and unit-tested with
   `@nestjs/testing`. Tests next to the code (`*.spec.ts`), fixtures in
   `test/fixtures/`, no real network in tests.
-- **Secrets**: webhook URLs come from env vars only; never log them (redact).
+- **Config**: inject `AppConfig` (from `src/config`); never read `process.env`
+  elsewhere. New settings go in `config.schema.ts` + `load-config.ts`, with
+  tests, `.env.example` and the README table.
+- **Secrets**: webhook URLs come from env vars only and are `Secret` objects;
+  call `.reveal()` only at the point of use (the HTTP request), never log it.
 - **Feeds are untrusted**: only `https://` URLs, timeout + max size, strip
   HTML, truncate to Discord limits, `allowed_mentions: { parse: [] }`.
 - Mark an item as seen **only after** Discord accepted it.

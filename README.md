@@ -43,6 +43,33 @@ New webhook → Copy webhook URL*. Treat it like a password.
   environment variable holding its webhook (`webhookEnv`), never the URL itself.
 - `.env`: secrets and settings (see `.env.example`).
 
+Everything is validated at startup. If something is wrong, feedhook lists
+every problem and exits, before fetching anything:
+
+```
+ERROR [ExceptionHandler] [ConfigError: Invalid configuration:
+  - env POLL_CRON: must be a cron expression like "0 * * * *"
+  - feeds.yaml: feeds[1].webhookEnv: environment variable DISCORD_WEBHOOK_NESTJS is not set]
+```
+
+| Field | Rule |
+|---|---|
+| `id` | lowercase letters, digits and dashes (`nuxt-blog`), unique |
+| `name` | 1 to 100 characters |
+| `url` | `https://` only, no credentials in the URL |
+| `color` | hex colour, `#RRGGBB` |
+| `webhookEnv` | name of an env var (`DISCORD_WEBHOOK_NUXT`) holding a Discord webhook URL |
+
+| Variable | Default | Notes |
+|---|---|---|
+| `DISCORD_WEBHOOK_*` | | one per feed, named in `feeds.yaml` |
+| `POLL_CRON` | `0 * * * *` | every hour |
+| `DATA_DIR` | `./data` | SQLite database folder |
+| `FEEDS_FILE` | `feeds.yaml` | path to the feeds file |
+| `UPTIME_KUMA_PUSH_URL` | | optional, `https://` only |
+
+Webhook URLs are secrets: they are never printed, even in error messages.
+
 ## Scripts
 
 | Command | What it does |
