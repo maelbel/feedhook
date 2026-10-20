@@ -64,7 +64,7 @@ ERROR [ExceptionHandler] [ConfigError: Invalid configuration:
 |---|---|---|
 | `DISCORD_WEBHOOK_*` | | one per feed, named in `feeds.yaml` |
 | `POLL_CRON` | `0 * * * *` | every hour |
-| `DATA_DIR` | `./data` | SQLite database folder |
+| `DATA_DIR` | `./data` | SQLite database folder (`feedhook.db`), created with `700` permissions |
 | `FEEDS_FILE` | `feeds.yaml` | path to the feeds file |
 | `UPTIME_KUMA_PUSH_URL` | | optional, `https://` only |
 

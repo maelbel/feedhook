@@ -45,7 +45,7 @@ The app is a NestJS **standalone application** (`NestFactory.createApplicationCo
 | `SchedulerModule` | `@nestjs/schedule`: runs one cycle at boot, then hourly. A lock prevents overlapping cycles. |
 | `FetcherModule` | HTTPS GET with timeout, max body size, `User-Agent`, and conditional requests (`ETag` / `If-Modified-Since`). |
 | `ParserModule` | Parses RSS 2.0 and Atom into a common `FeedItem { id, title, link, date, image? }`. |
-| `StoreModule` | SQLite (TypeORM + `better-sqlite3`) with tables `seen_items(feed_id, item_id, seen_at)` and `feed_state(feed_id, etag, last_modified)`. |
+| `StoreModule` | SQLite (Node's built-in `node:sqlite`, plain SQL, numbered migrations) with tables `seen_items(feed_id, item_id, seen_at)` and `feed_state(feed_id, etag, last_modified, seeded_at)`. |
 | `DiscordModule` | Builds the embed, sends it to the feed's webhook, and handles `429` (`retry_after`) and 5xx retries. |
 
 ### Key behaviours
@@ -87,7 +87,7 @@ UPTIME_KUMA_PUSH_URL=...
 | Scheduling | `@nestjs/schedule` |
 | Config | `@nestjs/config` + `zod` + `yaml` |
 | Feed parsing | `@rowanmanning/feed-parser` (on `fast-xml-parser`; `rss-parser` is unmaintained since 2023) + `html-entities` |
-| Storage | TypeORM + `better-sqlite3` (file on a Docker volume) |
+| Storage | Built-in `node:sqlite` (Node 24), plain SQL + migrations, WAL mode; file on a Docker volume. Chosen over TypeORM + `better-sqlite3`: two small tables, no ORM, no native module to build for arm64 |
 | Logging | `nestjs-pino` (JSON logs, secrets redacted) |
 | Tests | Vitest (Nest 12 default) with fixture feeds and mocked HTTP |
 | Quality | oxlint (Nest 12 default) + Prettier, `tsc --noEmit` |

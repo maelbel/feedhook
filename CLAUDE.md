@@ -56,3 +56,6 @@ npm run build
 - **Feeds are untrusted**: only `https://` URLs, timeout + max size, strip
   HTML, truncate to Discord limits, `allowed_mentions: { parse: [] }`.
 - Mark an item as seen **only after** Discord accepted it.
+- **Database**: `node:sqlite` with `?` placeholders only (never build SQL
+  from strings). Schema changes = a **new** entry at the end of
+  `src/store/migrations.ts`; never edit a released one.
