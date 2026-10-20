@@ -21,3 +21,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - Store module: SQLite database in `DATA_DIR` (built-in `node:sqlite`,
   numbered migrations, WAL) remembering posted items, the silent first-run
   seed and HTTP cache validators per feed (#5).
+- Discord module: one embed per item (title, link, feed colour, date,
+  summary, thumbnail) posted with `?wait=true`; mentions disabled, feed
+  markdown escaped (no masked links), Discord limits enforced; 429 waits
+  for `retry_after`, 5xx and network errors retried with backoff, other 4xx
+  fail at once; webhook URL never logged (#6).
