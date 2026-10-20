@@ -34,8 +34,9 @@ npm run build
 
 ## Workflow
 
-- Gitflow: feature branches from `develop` (`feature/<issue>-<name>`), PRs
-  into `develop`; releases via `release/x.y.z` into `main`.
+- Single `main` branch: short-lived `feature/<issue>-<name>`, `fix/…` or
+  `chore/…` branches from `main`, PRs into `main`. Releases are tags on
+  `main` (`vX.Y.Z`). No `develop` branch.
 - Conventional Commits.
 - **Always ask before committing**; push only after an approved commit; open
   a PR only after approval.
