@@ -42,7 +42,7 @@ The app is a NestJS **standalone application** (`NestFactory.createApplicationCo
 | Nest module | Responsibility |
 |---|---|
 | `ConfigModule` | `@nestjs/config` loads `feeds.yaml` and env vars, validated with zod. The app fails fast on invalid config. |
-| `SchedulerModule` | `@nestjs/schedule`: runs one cycle at boot, then hourly. A lock prevents overlapping cycles. |
+| `SchedulerModule` | `@nestjs/schedule`: runs one cycle at boot, then on `POLL_CRON`. A lock prevents overlapping cycles; new ETag / Last-Modified saved only once every new item is posted (otherwise a 304 would hide the waiting items). |
 | `FetcherModule` | HTTPS GET with timeout, max body size, `User-Agent`, and conditional requests (`ETag` / `If-Modified-Since`). |
 | `ParserModule` | Parses RSS 2.0 and Atom into a common `FeedItem { id, title, link, date, image? }`. |
 | `StoreModule` | SQLite (Node's built-in `node:sqlite`, plain SQL, numbered migrations) with tables `seen_items(feed_id, item_id, seen_at)` and `feed_state(feed_id, etag, last_modified, seeded_at)`. |

@@ -1,3 +1,4 @@
+import { validateCronExpression } from 'cron';
 import { z } from 'zod';
 
 /** `nuxt-blog`, `nestjs-releases`: lowercase words separated by dashes. */
@@ -12,10 +13,11 @@ const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
 export const DISCORD_WEBHOOK =
   /^https:\/\/(?:(?:canary|ptb)\.)?discord(?:app)?\.com\/api\/(?:v\d+\/)?webhooks\/\d+\/[\w-]+$/;
 /**
- * Five fields (minute hour day month weekday), or six with seconds.
- * Only the shape is checked here; the scheduler (issue #7) parses it fully.
+ * Five fields (minute hour day month weekday), or six with seconds, checked
+ * by the same `cron` library the scheduler uses: an expression that passes
+ * here is one the scheduler can run.
  */
-const CRON = /^(?:[\w*/,?#-]+\s+){4,5}[\w*/,?#-]+$/;
+const isCron = (value: string): boolean => validateCronExpression(value).valid;
 
 const MAX_FEEDS = 50;
 
@@ -88,7 +90,7 @@ export const envSchema = z.object({
     z
       .string()
       .trim()
-      .regex(CRON, 'must be a cron expression like "0 * * * *"')
+      .refine(isCron, 'must be a cron expression like "0 * * * *"')
       .default('0 * * * *'),
   ),
   DATA_DIR: z.preprocess(emptyAsUnset, z.string().trim().default('./data')),
