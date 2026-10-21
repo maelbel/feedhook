@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DiscordModule } from '../discord/index.js';
 import { FetcherModule } from '../fetcher/index.js';
+import { MonitoringModule } from '../monitoring/index.js';
 import { ParserModule } from '../parser/index.js';
 import { StoreModule } from '../store/index.js';
 import { CycleService } from './cycle.service.js';
@@ -15,6 +16,7 @@ import { SchedulerService } from './scheduler.service.js';
     ParserModule,
     StoreModule,
     DiscordModule,
+    MonitoringModule,
   ],
   providers: [
     CycleService,

@@ -110,8 +110,8 @@ UPTIME_KUMA_PUSH_URL=...
 ## 6. Operations
 
 - A `docker-compose.yml` service in the homelab stack with `restart: unless-stopped`.
-- **Monitoring**: an Uptime Kuma push monitor. The app pings it after each successful cycle (the URL is a secret), with the heartbeat interval set to about 65 minutes.
-- Healthcheck: a heartbeat file updated each cycle.
+- **Monitoring**: an Uptime Kuma push monitor. After each cycle the app pushes `up`, or `down` naming the failing feeds, with the cycle duration (the URL is a secret); the monitor's heartbeat interval is set to about 65 minutes.
+- Healthcheck: `heartbeat.json` written in `DATA_DIR` after each cycle; Docker `HEALTHCHECK` (`dist/healthcheck.js`) is unhealthy when no cycle finished for 2 poll intervals + 5 min.
 - Logs via `docker logs` (JSON).
 
 ## 7. Repo & workflow

@@ -83,6 +83,28 @@ v1.0.0 on): in `docker-compose.yml`, replace `build: .` and `image:` with
 The database lives in the `feedhook-data` volume: it survives restarts and
 image updates (`git pull && docker compose up -d --build`).
 
+## Monitoring
+
+**Docker healthcheck.** After every cycle, feedhook writes `heartbeat.json`
+in `/data`. `docker ps` shows the container as `unhealthy` when no cycle has
+finished for more than two poll intervals plus 5 minutes (2 h 05 with the
+hourly default, derived from `POLL_CRON`). A feed being down does not make
+the container unhealthy: restarting would not bring a website back.
+
+**Uptime Kuma (optional).** In Uptime Kuma, add a monitor of type **Push**,
+set its *Heartbeat Interval* a bit above the poll interval (e.g. 3900 s for
+hourly), copy the push URL into `.env`:
+
+```
+UPTIME_KUMA_PUSH_URL=https://uptime.example.com/api/push/<token>?status=up&msg=OK&ping=
+```
+
+After each cycle feedhook pushes `up` (all feeds fine) or `down` with the
+failing feeds, e.g. `1 feed(s) failed: nuxt-blog (request failed: timeout)`,
+and the cycle duration as the ping. No push within the interval means
+feedhook itself stopped. The push URL contains a token: it is treated as a
+secret and never logged.
+
 ## Configuration
 
 - `feeds.yaml`: the feeds to watch. Each feed references the **name** of the
@@ -112,7 +134,7 @@ ERROR [ExceptionHandler] [ConfigError: Invalid configuration:
 | `POLL_CRON` | `0 * * * *` | every hour |
 | `DATA_DIR` | `./data` | SQLite database folder (`feedhook.db`), created with `700` permissions |
 | `FEEDS_FILE` | `feeds.yaml` | path to the feeds file |
-| `UPTIME_KUMA_PUSH_URL` | | optional, `https://` only |
+| `UPTIME_KUMA_PUSH_URL` | | optional Uptime Kuma push URL, `https://` only, see Monitoring |
 
 Webhook URLs are secrets: they are never printed, even in error messages.
 

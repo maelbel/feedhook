@@ -1,10 +1,11 @@
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { AppModule } from '../src/app.module.js';
+import { checkHeartbeat, HEARTBEAT_FILE } from '../src/monitoring/index.js';
 import { CycleService, POLL_JOB } from '../src/scheduler/index.js';
 
 const NUXT_FEED = 'https://nuxt.com/blog/rss.xml';
@@ -79,6 +80,17 @@ describe('feedhook (e2e)', () => {
     vi.unstubAllGlobals();
     vi.unstubAllEnvs();
     rmSync(dataDir, { recursive: true, force: true });
+  });
+
+  it('writes a heartbeat after the startup cycle, found healthy by the healthcheck', async () => {
+    const path = join(dataDir, HEARTBEAT_FILE);
+    // Monitoring runs just after the cycle: give it a moment.
+    for (let i = 0; i < 50 && !existsSync(path); i++) {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+
+    const result = checkHeartbeat(readFileSync(path, 'utf8'), Date.now());
+    expect(result).toEqual({ healthy: true, reason: 'last cycle 0 min ago' });
   });
 
   it('schedules the hourly poll', () => {
