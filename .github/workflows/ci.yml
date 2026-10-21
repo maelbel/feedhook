@@ -91,6 +91,8 @@ jobs:
             docker logs smoke 2>&1 | grep -q 'cycle done' && break
             sleep 1
           done
+          # The Docker healthcheck script must find the heartbeat of that cycle.
+          docker exec smoke node dist/healthcheck.js
           docker stop --time 20 smoke
           docker logs smoke 2>&1 | tee smoke.log
 

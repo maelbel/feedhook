@@ -41,3 +41,7 @@ and the project uses [Semantic Versioning](https://semver.org/).
   production restrictions. Release workflow on `v*` tags: reruns CI, pins
   the base image digest, publishes a multi-arch image to GHCR with SBOM and
   provenance. Actions pinned by commit SHA, least-privilege tokens (#9).
+- Monitoring: heartbeat file after each cycle and Docker `HEALTHCHECK`
+  (unhealthy when cycles stop, max age derived from `POLL_CRON`); optional
+  Uptime Kuma push (`up`, or `down` naming the failing feeds, cycle duration
+  as ping), never breaking a cycle, token never logged (#10).

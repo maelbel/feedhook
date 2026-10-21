@@ -49,5 +49,11 @@ USER node
 # then closes the database.
 STOPSIGNAL SIGTERM
 
+# Healthy while poll cycles keep completing (heartbeat file in /data, max age
+# derived from POLL_CRON). A feed being down does not make it unhealthy.
+# The startup cycle writes the first heartbeat within the start period.
+HEALTHCHECK --interval=5m --timeout=10s --start-period=2m --retries=2 \
+  CMD ["node", "dist/healthcheck.js"]
+
 # No EXPOSE: feedhook opens no port, it only makes outbound requests.
 CMD ["node", "dist/main.js"]

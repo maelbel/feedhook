@@ -17,6 +17,8 @@ src/
   store/           SQLite: seen_items, feed_state                   (#5)
   discord/         webhook embeds, allowed_mentions, 429/retry      (#6)
   scheduler/       hourly cycle, silent seed, cap, lock             (#7)
+  monitoring/      heartbeat file + Uptime Kuma push after each cycle (#10)
+  healthcheck.ts   Docker HEALTHCHECK entry (reads the heartbeat only)
 test/
   fixtures/        sample feeds used by tests
 feeds.yaml         feeds to watch (no secrets: webhookEnv = env var NAME)
