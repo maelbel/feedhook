@@ -6,6 +6,11 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-21
+
+First release: posts new Nuxt blog articles and NestJS releases to their
+own Discord channels, from a hardened container on a Raspberry Pi.
+
 ### Added
 
 - Project setup: NestJS standalone application, Vitest, oxlint, Prettier.
@@ -45,3 +50,6 @@ and the project uses [Semantic Versioning](https://semver.org/).
   (unhealthy when cycles stop, max age derived from `POLL_CRON`); optional
   Uptime Kuma push (`up`, or `down` naming the failing feeds, cycle duration
   as ping), never breaking a cycle, token never logged (#10).
+
+[Unreleased]: https://github.com/maelbel/feedhook/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/maelbel/feedhook/releases/tag/v1.0.0
