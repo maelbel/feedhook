@@ -50,6 +50,33 @@ npm run start:dev
 Create a webhook in Discord: *Channel settings → Integrations → Webhooks →
 New webhook → Copy webhook URL*. Treat it like a password.
 
+## Run with Docker (Raspberry Pi)
+
+```bash
+git clone https://github.com/maelbel/feedhook.git && cd feedhook
+cp .env.example .env && chmod 600 .env   # fill in the two webhook URLs
+docker compose up -d --build
+docker compose logs -f feedhook
+```
+
+The first cycle runs at startup and only records the existing articles;
+from then on, every new article is posted. To change the feeds, edit
+`feeds.yaml` (mounted read-only) and run `docker compose restart feedhook`.
+
+What the container is allowed to do:
+
+| | |
+|---|---|
+| User | `node` (uid 1000), not root; application files read-only |
+| Filesystem | read-only, except the `feedhook-data` volume (`/data`, the SQLite database) and a 16 MB `/tmp` |
+| Privileges | all Linux capabilities dropped, `no-new-privileges` |
+| Network | outbound only, no port exposed (no Traefik needed) |
+| Resources | 256 MB RAM, half a CPU, 100 processes, logs capped at 3 × 10 MB |
+
+`docker stop` lets the current post finish before closing the database.
+The database lives in the `feedhook-data` volume: it survives restarts and
+image updates (`git pull && docker compose up -d --build`).
+
 ## Configuration
 
 - `feeds.yaml`: the feeds to watch. Each feed references the **name** of the

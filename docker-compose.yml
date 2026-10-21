@@ -1,0 +1,46 @@
+# feedhook on the Raspberry Pi.
+#   cp .env.example .env && chmod 600 .env   # then fill in the webhooks
+#   docker compose up -d --build
+#   docker compose logs -f feedhook
+services:
+  feedhook:
+    build: .
+    image: feedhook:local
+    container_name: feedhook
+    restart: unless-stopped
+
+    # Secrets (webhook URLs) and settings. Never commit .env.
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      FEEDS_FILE: /app/feeds.yaml
+      TZ: Europe/Paris
+
+    volumes:
+      # SQLite database: survives restarts and image updates.
+      - feedhook-data:/data
+      # Edit feeds.yaml on the host, then `docker compose restart feedhook`.
+      - ./feeds.yaml:/app/feeds.yaml:ro
+
+    # Hardening: the container can only write to /data and a small /tmp,
+    # has no Linux capabilities, cannot gain privileges, and opens no port.
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 100
+    mem_limit: 256m
+    cpus: 0.5
+
+    # Keep logs from filling the SD card.
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+
+volumes:
+  feedhook-data:

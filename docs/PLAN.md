@@ -104,7 +104,7 @@ UPTIME_KUMA_PUSH_URL=...
   - Every request has a timeout and a maximum response size.
   - Discord `allowed_mentions: { parse: [] }` means a feed can never trigger `@everyone`.
   - HTML is stripped and text is truncated to Discord limits.
-- **Supply chain**: committed lockfile, `npm ci`, Dependabot, `npm audit` in CI, and a pinned base image digest.
+- **Supply chain**: committed lockfile, `npm ci`, Dependabot, `npm audit` in CI, and an exact base image version (`node:24.22.0-alpine`) kept up to date by Dependabot; the digest is pinned in CI (#9), where the registry is reachable.
 - **Respect for sources**: hourly polling plus conditional requests.
 
 ## 6. Operations

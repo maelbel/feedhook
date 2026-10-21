@@ -20,6 +20,8 @@ src/
 test/
   fixtures/        sample feeds used by tests
 feeds.yaml         feeds to watch (no secrets: webhookEnv = env var NAME)
+Dockerfile         multi-stage, node:24-alpine, runs as `node`
+docker-compose.yml hardened service for the Pi (read-only, no caps, no port)
 ```
 
 ## Commands

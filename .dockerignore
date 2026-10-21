@@ -1,0 +1,22 @@
+# Only what the Dockerfile copies is needed; keep secrets and noise out of
+# the build context.
+.git
+.github
+node_modules
+dist
+coverage
+data
+*.db
+*.db-*
+*.sqlite*
+.env
+.env.*
+test
+docs
+*.md
+*.log
+.vscode
+.idea
+Dockerfile
+docker-compose*.yml
+.dockerignore

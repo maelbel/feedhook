@@ -31,3 +31,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
   (max 5 per feed per cycle), mark as seen after each accepted post; a
   failing feed never blocks the others, cycles never overlap, shutdown
   waits for the current post. `POLL_CRON` is now fully validated (#7).
+- Docker: multi-stage image on `node:24.22.0-alpine` (production deps only,
+  runs as `node`, app files read-only) and a hardened `docker-compose.yml`
+  (read-only filesystem, no capabilities, `no-new-privileges`, no port,
+  memory/CPU/PID limits, capped logs, data volume); Dependabot watches the
+  base image (#8).
