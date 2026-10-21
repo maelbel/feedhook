@@ -4,6 +4,8 @@
 #   docker compose logs -f feedhook
 services:
   feedhook:
+    # Built on the Pi. To use a published release instead, replace these two
+    # lines with: image: ghcr.io/maelbel/feedhook:1
     build: .
     image: feedhook:local
     container_name: feedhook

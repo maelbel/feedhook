@@ -36,3 +36,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
   (read-only filesystem, no capabilities, `no-new-privileges`, no port,
   memory/CPU/PID limits, capped logs, data volume); Dependabot watches the
   base image (#8).
+- CI: checks, tests, build and `npm audit` on every PR and push to `main`;
+  Docker image built natively on amd64 and arm64 and smoke-tested with the
+  production restrictions. Release workflow on `v*` tags: reruns CI, pins
+  the base image digest, publishes a multi-arch image to GHCR with SBOM and
+  provenance. Actions pinned by commit SHA, least-privilege tokens (#9).
