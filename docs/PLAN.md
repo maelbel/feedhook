@@ -91,7 +91,7 @@ UPTIME_KUMA_PUSH_URL=...
 | Logging | `nestjs-pino` (JSON logs, secrets redacted) |
 | Tests | Vitest (Nest 12 default) with fixture feeds and mocked HTTP |
 | Quality | oxlint (Nest 12 default) + Prettier, `tsc --noEmit` |
-| CI | GitHub Actions: lint, test, audit, build a multi-arch image, push to GHCR |
+| CI | GitHub Actions: lint, test, audit, Docker build + smoke test on native amd64 and arm64 runners; on `v*` tags, multi-arch image to GHCR (base digest pinned, SBOM, provenance) |
 
 ## 5. Security
 

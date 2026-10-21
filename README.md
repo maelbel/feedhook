@@ -1,5 +1,7 @@
 # feedhook
 
+[![CI](https://github.com/maelbel/feedhook/actions/workflows/ci.yml/badge.svg)](https://github.com/maelbel/feedhook/actions/workflows/ci.yml)
+
 Self-hosted notifier that watches RSS/Atom feeds and posts each **new** item,
 exactly once, to a **Discord channel per source** through webhooks.
 
@@ -72,6 +74,10 @@ What the container is allowed to do:
 | Privileges | all Linux capabilities dropped, `no-new-privileges` |
 | Network | outbound only, no port exposed (no Traefik needed) |
 | Resources | 256 MB RAM, half a CPU, 100 processes, logs capped at 3 × 10 MB |
+
+Instead of building on the Pi, you can use the published image (from
+v1.0.0 on): in `docker-compose.yml`, replace `build: .` and `image:` with
+`image: ghcr.io/maelbel/feedhook:1`.
 
 `docker stop` lets the current post finish before closing the database.
 The database lives in the `feedhook-data` volume: it survives restarts and

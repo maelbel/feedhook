@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  # Reused by the release workflow before publishing an image.
+  workflow_call:
+
+# Least privilege: jobs only read the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  checks:
+    name: Lint, test, build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # --ignore-scripts: no dependency install script runs in CI either.
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run test:e2e
+      - run: npm run build
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+  docker:
+    name: Docker image (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          # Native arm64 runner: the same architecture as the Raspberry Pi 5.
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          load: true
+          push: false
+          tags: feedhook:ci
+          cache-from: type=gha,scope=${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.arch }}
+
+      # Starts the image with the same restrictions as docker-compose.yml and
+      # no network: the app must boot, validate its config, open its database
+      # as the unprivileged user, run a cycle (feeds unreachable) and stop
+      # cleanly on SIGTERM.
+      - name: Smoke test (hardened, offline)
+        run: |
+          docker run -d --name smoke \
+            --read-only --tmpfs /tmp:size=16m \
+            --cap-drop ALL --security-opt no-new-privileges:true \
+            --network none \
+            -e DISCORD_WEBHOOK_NUXT=https://discord.com/api/webhooks/1/ci-secret-token \
+            -e DISCORD_WEBHOOK_NESTJS=https://discord.com/api/webhooks/2/ci-secret-token \
+            -v smoke-data:/data \
+            feedhook:ci
+
+          for _ in $(seq 1 30); do
+            docker logs smoke 2>&1 | grep -q 'cycle done' && break
+            sleep 1
+          done
+          docker stop --time 20 smoke
+          docker logs smoke 2>&1 | tee smoke.log
+
+          grep -q 'feedhook started' smoke.log
+          grep -q 'database ready: /data/feedhook.db' smoke.log
+          grep -q 'cycle done' smoke.log
+          grep -q 'scheduler stopped' smoke.log
+          test "$(docker inspect smoke --format '{{.Config.User}}')" = node
+          if grep -q 'ci-secret-token' smoke.log; then
+            echo 'webhook URL found in logs' >&2
+            exit 1
+          fi
