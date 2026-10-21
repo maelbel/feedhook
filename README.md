@@ -16,10 +16,23 @@ only scheduled outbound requests. Designed to run in Docker on a Raspberry Pi.
 
 ## How it works
 
-Every hour, feedhook fetches each feed, keeps the items it has not seen yet
-(stored in SQLite), and posts them to that feed's Discord webhook as embeds.
-On the very first run it only records existing items, so old posts don't
-flood the channel.
+At startup and then every hour, feedhook fetches each feed, keeps the items
+it has not seen yet (stored in SQLite), and posts them to that feed's Discord
+webhook as embeds, oldest first.
+
+- **First run**: existing items are only recorded, so old posts don't flood
+  the channel.
+- **At most 5 posts per feed per cycle**; the rest follows on the next cycle.
+- **An item is marked as seen only once Discord accepted it**: if Discord is
+  down, it is posted on a later cycle, in order.
+- **One feed failing** (timeout, invalid document, Discord error) never
+  stops the others.
+
+Each cycle ends with one log line:
+
+```
+LOG  [CycleService] cycle done in 682 ms: nuxt-blog posted 1, nestjs-releases not-modified
+```
 
 ## Requirements
 

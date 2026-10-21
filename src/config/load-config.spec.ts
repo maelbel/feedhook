@@ -234,11 +234,23 @@ describe('loadAppConfig', () => {
   });
 
   describe('environment', () => {
-    it('rejects an invalid cron expression', () => {
-      expect(
-        issuesOf(VALID_YAML, { ...BASE_ENV, POLL_CRON: 'every hour' }),
-      ).toContainEqual(expect.stringContaining('env POLL_CRON'));
-    });
+    it.each(['every hour', '61 * * * *', '* * *', '0 25 * * *'])(
+      'rejects the invalid cron expression "%s"',
+      (cron) => {
+        expect(
+          issuesOf(VALID_YAML, { ...BASE_ENV, POLL_CRON: cron }),
+        ).toContainEqual(expect.stringContaining('env POLL_CRON'));
+      },
+    );
+
+    it.each(['0 * * * *', '*/15 * * * *', '0 0 * * * *', '30 8 * * 1-5'])(
+      'accepts the cron expression "%s"',
+      (cron) => {
+        expect(
+          load(VALID_YAML, { ...BASE_ENV, POLL_CRON: cron }).pollCron,
+        ).toBe(cron);
+      },
+    );
 
     it('rejects an http push URL without printing it', () => {
       const issues = issuesOf(VALID_YAML, {

@@ -1,22 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from './config/index.js';
-import { DiscordModule } from './discord/index.js';
-import { FetcherModule } from './fetcher/index.js';
-import { ParserModule } from './parser/index.js';
-import { StoreModule } from './store/index.js';
+import { SchedulerModule } from './scheduler/index.js';
 
 /**
- * Root module. Feature modules are added here as they are built
- * (see docs/PLAN.md, section 8):
- * SchedulerModule.
+ * Root module. The scheduler imports the feature modules it drives
+ * (fetcher, parser, store, discord); the config is global.
  */
 @Module({
-  imports: [
-    ConfigModule,
-    FetcherModule,
-    ParserModule,
-    StoreModule,
-    DiscordModule,
-  ],
+  imports: [ConfigModule, SchedulerModule],
 })
 export class AppModule {}

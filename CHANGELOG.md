@@ -26,3 +26,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
   markdown escaped (no masked links), Discord limits enforced; 429 waits
   for `retry_after`, 5xx and network errors retried with backoff, other 4xx
   fail at once; webhook URL never logged (#6).
+- Scheduler: one cycle at startup then on `POLL_CRON` (hourly); per feed:
+  fetch, parse, silent seed on the first run, post new items oldest first
+  (max 5 per feed per cycle), mark as seen after each accepted post; a
+  failing feed never blocks the others, cycles never overlap, shutdown
+  waits for the current post. `POLL_CRON` is now fully validated (#7).
