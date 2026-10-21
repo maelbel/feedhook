@@ -1,6 +1,6 @@
 {
   "name": "feedhook",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Self-hosted notifier that posts new RSS/Atom feed items to Discord webhooks",
   "author": "maelbel",
   "license": "MIT",

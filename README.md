@@ -13,8 +13,9 @@ only scheduled outbound requests. Designed to run in Docker on a Raspberry Pi.
 | Nuxt blog | `https://nuxt.com/blog/rss.xml` | `#nuxt-news` |
 | NestJS releases | `https://github.com/nestjs/nest/releases.atom` | `#nestjs-news` |
 
-> Status: **early development**. See [docs/PLAN.md](docs/PLAN.md) and the
-> GitHub issues for the roadmap.
+> Status: **v1.0.0**. Images for amd64 and arm64 (Raspberry Pi) are published
+> to `ghcr.io/maelbel/feedhook`. Design notes in [docs/PLAN.md](docs/PLAN.md),
+> changes in [CHANGELOG.md](CHANGELOG.md).
 
 ## How it works
 
