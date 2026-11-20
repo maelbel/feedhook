@@ -15,6 +15,8 @@ export interface FeedItem {
   readonly summary?: string;
   /** Absolute http(s) URL of an illustration. */
   readonly image?: string;
+  /** Category terms, lowercased and deduplicated. Omitted when the feed has none. */
+  readonly categories?: readonly string[];
 }
 
 export interface ParsedFeed {

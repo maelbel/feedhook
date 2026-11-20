@@ -135,7 +135,31 @@ export class CycleService {
         items.map((item) => item.id),
       ),
     );
-    const fresh = oldestFirst(items.filter((item) => unseen.has(item.id)));
+
+    // Category gate. Items the feed's `channel` rejects are marked seen
+    // immediately: they must not be reconsidered next cycle, and must not
+    // inflate `pending`.
+    const kept: FeedItem[] = [];
+    const ignored: FeedItem[] = [];
+    for (const item of items) {
+      if (!unseen.has(item.id)) continue;
+      if (feed.channel && !matchesChannel(item, feed.channel)) {
+        ignored.push(item);
+      } else {
+        kept.push(item);
+      }
+    }
+    if (ignored.length > 0) {
+      this.store.markSeen(
+        feed.id,
+        ignored.map((item) => item.id),
+      );
+      this.logger.debug(
+        `feed ${feed.id}: ${ignored.length} item(s) outside channel "${feed.channel}" ignored`,
+      );
+    }
+
+    const fresh = oldestFirst(kept);
     const batch = fresh.slice(0, this.options.maxPostsPerFeed);
 
     let posted = 0;
@@ -201,4 +225,15 @@ function oldestFirst(items: readonly FeedItem[]): FeedItem[] {
         : a.index - b.index,
     )
     .map(({ item }) => item);
+}
+
+/**
+ * True when the item belongs to the feed's channel. Items with no category
+ * always pass, so feeds that don't tag entries at all keep working; items
+ * that do tag themselves pass only on a match. `channel` and
+ * `item.categories` are both already lowercase.
+ */
+function matchesChannel(item: FeedItem, channel: string): boolean {
+  if (!item.categories?.length) return true;
+  return item.categories.includes(channel);
 }

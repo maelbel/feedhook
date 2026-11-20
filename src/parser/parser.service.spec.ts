@@ -12,6 +12,10 @@ const FEED_URL = 'https://example.com/feed.xml';
 const rss = (items: string): string =>
   `<?xml version="1.0"?><rss version="2.0"><channel><title>Test</title>${items}</channel></rss>`;
 
+/** A minimal Atom document around the given <entry> elements. */
+const atom = (entries: string): string =>
+  `<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom"><title>Test</title>${entries}</feed>`;
+
 describe('ParserService', () => {
   const parser = new ParserService();
 
@@ -35,6 +39,7 @@ describe('ParserService', () => {
         date: new Date('2026-10-05T23:00:00Z'),
         summary: expect.stringMatching(/^Nuxt 4\.6 makes Nuxt server-agnostic/),
         image: 'https://nuxt.com/assets/blog/v4.6.png',
+        categories: ['release'],
       });
     });
   });
@@ -186,6 +191,55 @@ describe('ParserService', () => {
 
     it('returns no items for an empty channel', () => {
       expect(parser.parse(rss(''), FEED_URL).items).toEqual([]);
+    });
+  });
+
+  describe('categories', () => {
+    it('extracts and lowercases Atom category terms', () => {
+      const { items } = parser.parse(
+        atom(
+          '<entry><id>1</id><title>Release</title><category term="Default" label="Stable"/></entry>',
+        ),
+        FEED_URL,
+      );
+
+      expect(items[0].categories).toEqual(['default']);
+    });
+
+    it('extracts and lowercases RSS categories', () => {
+      const { items } = parser.parse(
+        rss(
+          '<item><guid>1</guid><title>Post</title><category>News</category><category>news</category></item>',
+        ),
+        FEED_URL,
+      );
+
+      expect(items[0].categories).toEqual(['news']);
+    });
+
+    it('omits categories when an entry has none', () => {
+      const { items } = parser.parse(
+        atom('<entry><id>1</id><title>Untagged</title></entry>'),
+        FEED_URL,
+      );
+
+      expect(items[0]).not.toHaveProperty('categories');
+    });
+
+    it('bounds category count and length', () => {
+      const tags = Array.from(
+        { length: 15 },
+        (_, i) => `<category>cat-${i}-${'x'.repeat(80)}</category>`,
+      ).join('');
+      const { items } = parser.parse(
+        rss(`<item><guid>1</guid><title>Many</title>${tags}</item>`),
+        FEED_URL,
+      );
+
+      expect(items[0].categories).toHaveLength(10);
+      expect(
+        items[0].categories!.every((category) => category.length <= 64),
+      ).toBe(true);
     });
   });
 

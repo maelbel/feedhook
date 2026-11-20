@@ -128,6 +128,7 @@ ERROR [ExceptionHandler] [ConfigError: Invalid configuration:
 | `url` | `https://` only, no credentials in the URL |
 | `color` | hex colour, `#RRGGBB` |
 | `webhookEnv` | name of an env var (`DISCORD_WEBHOOK_NUXT`) holding a Discord webhook URL |
+| `channel` | optional category filter (1 to 64 characters, case-insensitive exact match on Atom `<category term>` / RSS `<category>`); items with no categories still pass |
 
 | Variable | Default | Notes |
 |---|---|---|

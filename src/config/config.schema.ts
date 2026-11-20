@@ -59,6 +59,17 @@ const feedSchema = z.strictObject({
       ENV_NAME,
       'must be an environment variable name like DISCORD_WEBHOOK_NUXT',
     ),
+  /**
+   * Only post items tagged with this category (Atom `<category term>`,
+   * RSS `<category>`). Absent = post everything. Compared lowercased.
+   */
+  channel: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(1, 'must not be empty')
+    .max(64)
+    .optional(),
 });
 
 export const feedsFileSchema = z

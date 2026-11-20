@@ -10,6 +10,8 @@ export interface FeedConfig {
   readonly url: string;
   /** Embed colour as an integer, the format Discord expects (`#00DC82` -> 56450). */
   readonly color: number;
+  /** Optional category gate; see `matchesChannel` in CycleService. */
+  readonly channel?: string;
   /** Discord webhook URL for this feed's channel. */
   readonly webhookUrl: Secret;
 }

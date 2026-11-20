@@ -13,23 +13,28 @@ import { type FeedItem, ParserService } from '../parser/index.js';
 import { StoreService } from '../store/index.js';
 import { CycleService } from './cycle.service.js';
 
-const feedConfig = (id: string): FeedConfig => ({
+const feedConfig = (id: string, channel?: string): FeedConfig => ({
   id,
   name: id,
   url: `https://${id}.example.com/feed.xml`,
   color: 0,
+  ...(channel && { channel }),
   webhookUrl: new Secret(`https://discord.com/api/webhooks/1/${id}`),
 });
 const NUXT = feedConfig('nuxt');
 const NEST = feedConfig('nest');
 
 /** An RSS document; items are given newest first, like real feeds. */
-function rss(items: { id: string; date?: string }[]): string {
+function rss(
+  items: { id: string; date?: string; categories?: string[] }[],
+): string {
   const body = items
-    .map(
-      ({ id, date }) =>
-        `<item><guid>${id}</guid><title>Post ${id}</title>${date ? `<pubDate>${date}</pubDate>` : ''}</item>`,
-    )
+    .map(({ id, date, categories }) => {
+      const cats = (categories ?? [])
+        .map((category) => `<category>${category}</category>`)
+        .join('');
+      return `<item><guid>${id}</guid><title>Post ${id}</title>${date ? `<pubDate>${date}</pubDate>` : ''}${cats}</item>`;
+    })
     .join('');
   return `<?xml version="1.0"?><rss version="2.0"><channel><title>t</title>${body}</channel></rss>`;
 }
@@ -246,6 +251,89 @@ describe('CycleService', () => {
         'Post i6',
       ]);
       expect(store.getValidators('nuxt')).toEqual({ etag: '"new"' });
+    });
+  });
+
+  describe('channel filter', () => {
+    const FILTERED = feedConfig('nuxt', 'default');
+
+    it('posts only matching items and marks ignored items as seen', async () => {
+      store.seed('nuxt', []);
+      answers.set(
+        FILTERED.url,
+        ok(
+          rss([
+            { id: 'plug', date: day(2), categories: ['plugin'] },
+            { id: 'core', date: day(1), categories: ['default'] },
+          ]),
+          '"v2"',
+        ),
+      );
+
+      const report = await cycleFor([FILTERED]).run();
+
+      expect(posts).toEqual([{ feedId: 'nuxt', title: 'Post core' }]);
+      expect(report.feeds[0]).toEqual({
+        feedId: 'nuxt',
+        status: 'posted',
+        posted: 1,
+        pending: 0,
+      });
+      expect(store.unseenIds('nuxt', ['core', 'plug'])).toEqual([]);
+      expect(store.getValidators('nuxt')).toEqual({ etag: '"v2"' });
+    });
+
+    it('reports up-to-date and saves validators when all new items are ignored', async () => {
+      store.seed('nuxt', []);
+      answers.set(
+        FILTERED.url,
+        ok(rss([{ id: 'plug', categories: ['plugin'] }]), '"v2"'),
+      );
+
+      const report = await cycleFor([FILTERED]).run();
+
+      expect(posts).toEqual([]);
+      expect(report.feeds[0]).toEqual({
+        feedId: 'nuxt',
+        status: 'up-to-date',
+        posted: 0,
+        pending: 0,
+      });
+      expect(store.unseenIds('nuxt', ['plug'])).toEqual([]);
+      expect(store.getValidators('nuxt')).toEqual({ etag: '"v2"' });
+    });
+
+    it('still posts items that carry no categories', async () => {
+      store.seed('nuxt', []);
+      answers.set(FILTERED.url, ok(rss([{ id: 'untagged' }])));
+
+      const report = await cycleFor([FILTERED]).run();
+
+      expect(posts).toEqual([{ feedId: 'nuxt', title: 'Post untagged' }]);
+      expect(report.feeds[0]).toEqual({
+        feedId: 'nuxt',
+        status: 'posted',
+        posted: 1,
+        pending: 0,
+      });
+    });
+
+    it('records all items during first-run seed regardless of channel', async () => {
+      answers.set(
+        FILTERED.url,
+        ok(
+          rss([
+            { id: 'plug', categories: ['plugin'] },
+            { id: 'core', categories: ['default'] },
+          ]),
+        ),
+      );
+
+      const report = await cycleFor([FILTERED]).run();
+
+      expect(report.feeds[0].status).toBe('seeded');
+      expect(posts).toEqual([]);
+      expect(store.unseenIds('nuxt', ['core', 'plug'])).toEqual([]);
     });
   });
 

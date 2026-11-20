@@ -77,6 +77,13 @@ describe('loadAppConfig', () => {
       });
       expect(config.feeds[0].webhookUrl.reveal()).toBe(NUXT_HOOK);
       expect(config.feeds[1].webhookUrl.reveal()).toBe(NEST_HOOK);
+      expect('channel' in config.feeds[0]).toBe(false);
+    });
+
+    it('normalizes an optional channel filter to lowercase', () => {
+      const config = load(feedYaml({ channel: "'  Default  '" }));
+
+      expect(config.feeds[0].channel).toBe('default');
     });
 
     it('applies defaults when optional variables are missing or empty', () => {
@@ -151,6 +158,13 @@ describe('loadAppConfig', () => {
         'feeds[0].webhookEnv',
       ],
       ['an empty name', { name: "''" }, 'feeds[0].name'],
+      ['an empty channel', { channel: "''" }, 'feeds[0].channel'],
+      ['a whitespace-only channel', { channel: "'   '" }, 'feeds[0].channel'],
+      [
+        'an overly long channel',
+        { channel: `'${'a'.repeat(65)}'` },
+        'feeds[0].channel',
+      ],
     ])('rejects %s', (_, overrides, field) => {
       const issues = issuesOf(feedYaml(overrides));
 

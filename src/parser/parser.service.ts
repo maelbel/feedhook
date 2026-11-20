@@ -13,6 +13,8 @@ const MAX_TITLE = 512;
 const MAX_SUMMARY = 2000;
 /** Longer ids are hashed so the store keeps a fixed-size key. */
 const MAX_ID = 512;
+const MAX_CATEGORIES = 10;
+const MAX_CATEGORY = 64;
 
 /**
  * Turns RSS 2.0 and Atom documents into `FeedItem`s.
@@ -73,6 +75,7 @@ function toFeedItem(entry: Entry, feedUrl: string): FeedItem | undefined {
     entry.mediaImages[0]?.url ?? entry.image?.url,
     feedUrl,
   );
+  const categories = readCategories(entry);
 
   return Object.freeze({
     id: stableId(rawId),
@@ -81,7 +84,26 @@ function toFeedItem(entry: Entry, feedUrl: string): FeedItem | undefined {
     ...(date && !Number.isNaN(date.getTime()) && { date }),
     ...(summaryText && { summary: truncate(summaryText, MAX_SUMMARY) }),
     ...(image && { image }),
+    ...(categories.length > 0 && { categories }),
   });
+}
+
+/**
+ * Atom `<category term="default"/>` and RSS `<category>Default</category>`.
+ * Lowercased so `channel: Default` in feeds.yaml matches; deduplicated and
+ * bounded, since both come straight from the feed.
+ */
+function readCategories(entry: Entry): readonly string[] {
+  const out = new Set<string>();
+  for (const category of entry.categories) {
+    if (out.size >= MAX_CATEGORIES) break;
+    const name = htmlToText(category.term)
+      .toLowerCase()
+      .slice(0, MAX_CATEGORY)
+      .trim();
+    if (name) out.add(name);
+  }
+  return Object.freeze([...out]);
 }
 
 function stableId(rawId: string): string {

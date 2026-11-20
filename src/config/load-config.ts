@@ -80,6 +80,7 @@ export function loadAppConfig(
           name: feed.name,
           url: feed.url,
           color: Number.parseInt(feed.color.slice(1), 16),
+          ...(feed.channel && { channel: feed.channel }),
           webhookUrl: new Secret(url ?? ''),
         });
       });

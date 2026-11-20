@@ -17,7 +17,7 @@ A small self-hosted service on the Raspberry Pi that watches RSS/Atom feeds and 
 ### Out of scope (v1, possible later)
 - NestJS newsletter via Kill the Newsletter (v2: just another feed entry)
 - LinkedIn (no reliable/legal source)
-- Web UI / HTTP API, per-feed keyword filters
+- Web UI / HTTP API, per-feed keyword/regex filters (exact category filtering via `channel` is supported)
 
 ## 2. Decisions
 - Framework: **NestJS** (TypeScript, Node.js 24 LTS)
@@ -44,7 +44,7 @@ The app is a NestJS **standalone application** (`NestFactory.createApplicationCo
 | `ConfigModule` | `@nestjs/config` loads `feeds.yaml` and env vars, validated with zod. The app fails fast on invalid config. |
 | `SchedulerModule` | `@nestjs/schedule`: runs one cycle at boot, then on `POLL_CRON`. A lock prevents overlapping cycles; new ETag / Last-Modified saved only once every new item is posted (otherwise a 304 would hide the waiting items). |
 | `FetcherModule` | HTTPS GET with timeout, max body size, `User-Agent`, and conditional requests (`ETag` / `If-Modified-Since`). |
-| `ParserModule` | Parses RSS 2.0 and Atom into a common `FeedItem { id, title, link, date, image? }`. |
+| `ParserModule` | Parses RSS 2.0 and Atom into a common `FeedItem { id, title, link, date, image?, categories? }`. |
 | `StoreModule` | SQLite (Node's built-in `node:sqlite`, plain SQL, numbered migrations) with tables `seen_items(feed_id, item_id, seen_at)` and `feed_state(feed_id, etag, last_modified, seeded_at)`. |
 | `DiscordModule` | Builds the embed, sends it to the feed's webhook, and handles `429` (`retry_after`) and 5xx retries. |
 
